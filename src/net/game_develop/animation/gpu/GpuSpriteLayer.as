@@ -140,8 +140,8 @@ package net.game_develop.animation.gpu
 						ob2d.change = false;
 						ob2d.selfChange = false;
 						vChange = true;
-						var sinT:Number = Math.sin(ob2d.rotation * toRADIANS);
-						var cosT:Number = Math.cos(ob2d.rotation * toRADIANS);
+						var sinT:Number = Math.sin(-ob2d.rotation * toRADIANS);
+						var cosT:Number = Math.cos(-ob2d.rotation * toRADIANS);
 						var count:int = i * 12;
 						_vertexData[count] =      (ob2d.vouts[0]*ob2d.scaleX * cosT - ob2d.vouts[1] * ob2d.scaleY* sinT + ob2d.x) * vw2 - vtx;
 						_vertexData[count + 1] = -( -ob2d.vouts[1] * ob2d.scaleY * cosT - ob2d.vouts[0] * ob2d.scaleX * sinT + ob2d.y) * vh2 + vty;
