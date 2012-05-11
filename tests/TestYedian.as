@@ -40,23 +40,21 @@ package
 		private var layer:GpuObj2d;
 		
 		private var tf:TextField;
-			private var tx:int = -1;
+		private var tx:int = -1;
 		private var ty:int = -1;
 		private var sprite:Particle;
 		private var particles:Array=[];
 		public function TestYedian() 
 		{
-			
-			
 			addEventListener(Event.ADDED_TO_STAGE, addedToStage);
-			stage.scaleMode = StageScaleMode.NO_SCALE;
-			stage.align = StageAlign.TOP_LEFT;
 		}
 		
 		private function addedToStage(e:Event):void 
 		{
 			removeEventListener(Event.ADDED_TO_STAGE, addedToStage);
 			
+			stage.scaleMode = StageScaleMode.NO_SCALE;
+			stage.align = StageAlign.TOP_LEFT;
 			
 			view = new GpuView2d(stage.stageWidth, stage.stageHeight);
 			addChild(view);
