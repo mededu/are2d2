@@ -14,6 +14,7 @@ package net.game_develop.animation.gpu.textures
 	{
 		private static var _instance:TextureManager;
 		public var lib:Dictionary = new Dictionary;
+		public var isDisposeBmd:Boolean = false;
 		public function TextureManager() 
 		{
 			if (_instance) throw "this is a instance class";
@@ -50,7 +51,8 @@ package net.game_develop.animation.gpu.textures
 				var texture:Texture = c3d.createTexture(w, h, Context3DTextureFormat.BGRA, false);
 				texture.uploadFromBitmapData(temp);
 				temp.dispose();
-				lib[bmd]=texture
+				lib[bmd] = texture;
+				if(isDisposeBmd)bmd.dispose();
 			}
 			return lib[bmd];
 		}

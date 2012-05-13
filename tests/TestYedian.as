@@ -70,6 +70,7 @@ package
 			[Embed(source = "yedian", mimeType = "application/octet-stream")]var c:Class;
 			var ba:ByteArray = new c as ByteArray;
 			var obj:Object = ba.readObject();
+			ba = null;
 			for each(var arr:Array in obj) {
 				var barr:Array = [];
 				aarr.push(barr);
@@ -88,7 +89,7 @@ package
 					loader.loadBytes(arr2[0]);
 				}
 			}
-			
+			obj = null;
 			addChild(new Stats);
 			tf = new TextField;
 			tf.autoSize = TextFieldAutoSize.LEFT;
@@ -333,7 +334,7 @@ package
 				bmds.push(bmd);
 				offsets.push(new Point(offsetX-hotX, offsetY-hotY));
 			}
-			
+			asset.dispose();
 			return GpuAnimationParser.parser(bmds, offsets, name);
 		}
 	}

@@ -62,8 +62,9 @@ package net.game_develop.animation.gpu.display
 		private var objindexs:Dictionary = new Dictionary;
 		
 		
-		public function GpuSpriteLayer(view:GpuView2d,numChilds:int=15000)
+		public function GpuSpriteLayer(view:GpuView2d, numChilds:int = 15000, isDisposeBmd:Boolean = true )
 		{
+			this.isDisposeBmd = isDisposeBmd;
 			this.view = view;
 			this.numChilds = numChilds;
 			vlChange = true;
@@ -258,6 +259,9 @@ package net.game_develop.animation.gpu.display
 								irect = insertBox.boxs[insertBox.boxs.length - 1];
 								insertbmd.setVector(irect, abase.bmd.getVector(abase.bmd.rect));
 								rects[abase.bmd] = irect;
+								if (isDisposeBmd) {
+									abase.bmd.dispose();
+								}
 								tchange = true;
 							}else {
 								throw "gpuspritelayer 位图大小超过2048";
@@ -272,6 +276,9 @@ package net.game_develop.animation.gpu.display
 						irect = insertBox.boxs[insertBox.boxs.length - 1];
 						insertbmd.setVector(irect, ob2d.bmd.getVector(ob2d.bmd.rect));
 						rects[ob2d.bmd] = irect;
+						if (isDisposeBmd) {
+							ob2d.bmd.dispose();
+						}
 						tchange = true;
 					}else {
 						throw "gpuspritelayer 位图大小超过2048";
@@ -299,6 +306,7 @@ package net.game_develop.animation.gpu.display
 		}
 		private var numChilds:int;
 		private var view:GpuView2d;
+		private var isDisposeBmd:Boolean;
 		private var vins:Vector.<Number> = Vector.<Number>([0, 0, 0, 1, 0, 0, 0, -1, 0, 1, -1, 0]);
 		override public function add(ob2d:GpuObj2d):GpuObj2d
 		{
