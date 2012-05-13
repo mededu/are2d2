@@ -3,6 +3,7 @@ package net.game_develop.animation.gpu.display
 	import flash.display.BitmapData;
 	import flash.display3D.Context3DBlendFactor;
 	import flash.display3D.Context3DProgramType;
+	import flash.display3D.IndexBuffer3D;
 	import flash.display3D.Program3D;
 	import flash.display3D.textures.Texture;
 	import flash.display3D.VertexBuffer3D;
@@ -11,6 +12,7 @@ package net.game_develop.animation.gpu.display
 	import flash.geom.ColorTransform;
 	import flash.geom.Matrix3D;
 	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	import flash.geom.Vector3D;
 	import net.game_develop.animation.gpu.renders.BasicRenderer;
 	import net.game_develop.animation.gpu.renders.IRenderer;
@@ -63,11 +65,25 @@ package net.game_develop.animation.gpu.display
 	 */
 	public class GpuObj2d extends EventDispatcher
 	{
+		public static const DEF_INDEX_DATA:Vector.<uint> = Vector.<uint>([0, 1, 3, 3, 2, 0]);
+		public static const DEF_VERTEX_DATA:Vector.<Number>= Vector.<Number>(
+				[
+				0, 0, 0,
+				1, 0, 0,
+				0, -1, 0,
+				1,-1,0
+				]);
+		
 		public var parent:GpuObj2d;
 		public var childs:Array;
 		public var vmatrix:Matrix3D = new Matrix3D;
 		public var wmatrix:Matrix3D = new Matrix3D;
 		private var _selfMatrix:Matrix3D = new Matrix3D;
+		public var indexBuffer:IndexBuffer3D;
+		public var indexData:Vector.<uint>=DEF_INDEX_DATA;
+		public var vertexBuffer:VertexBuffer3D;
+		public var vertexData:Vector.<Number>=DEF_VERTEX_DATA;
+		
 		
 		public var vouts:Vector.<Number>;
 		
@@ -88,7 +104,8 @@ package net.game_develop.animation.gpu.display
 		public var texture:Texture;
 		public var textureChange:Boolean = true;
 		protected var _bmd:BitmapData;
-		public var uv:Point;
+		public var uv:Rectangle;
+		public var uvvertexBuffer:VertexBuffer3D;
 		//protected var _view:GpuView2d;
 		
 		private var _colorTransform:ColorTransform;
@@ -104,10 +121,21 @@ package net.game_develop.animation.gpu.display
 		/*public var uvBuffer:VertexBuffer3D;
 		public var textureId:int;*/
 		
+		/**
+		 * 混合模式source
+		 */
 		public var  blendSourceFactor:String = Context3DBlendFactor.ONE;
+		/**
+		 * 混合模式Destination
+		 */
 		public var blendDestinationFactor:String = Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA;
-		public function GpuObj2d(width:Number=1, height:Number=1,bmd:BitmapData=null,offsetX:Number=NaN, offsetY:Number=NaN,uv:Point=null)
+		/**
+		 * 是否初始化完成 生产texture 顶点buff，indexbuff
+		 */
+		public var inited:Boolean=false;
+		public function GpuObj2d(width:Number=1, height:Number=1,bmd:BitmapData=null,offsetX:Number=NaN, offsetY:Number=NaN,uv:Rectangle=null)
 		{
+			this.uv = uv;
 			
 			renderer = BasicRenderer.instance;
 			_bmd = bmd;

@@ -279,6 +279,7 @@ package net.game_develop.animation.gpu
 			//for each(var obj2d:GpuObj2d in obj2ds) {
 				//doobj(_root);
 			//}
+			_root.renderer.render(_root,this);
 			c3d.present();
 			
 			/*if (ihittest) {
