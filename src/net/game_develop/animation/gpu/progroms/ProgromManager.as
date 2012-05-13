@@ -24,18 +24,16 @@ package net.game_develop.animation.gpu.progroms
 		}
 		
 		public function getProgrom(vertexCode:String, fragmentCode:String, c3d:Context3D):Program3D {
+			if (vertexCode == null || fragmentCode == null) return null;
 			var code:String = vertexCode + fragmentCode;
 			if (lib[code] == null) {
 				var vsa:AGALMiniAssembler = new AGALMiniAssembler(false);
 				vsa.assemble(Context3DProgramType.VERTEX,
-					"m44 vt0,va0,vc0\n"+
-					"m44 vt0,vt0,vc4\n"+
-					"m44 op,vt0,vc8\n"+
-					"mov v0,va1"
+					vertexCode
 					);
 				var fsa:AGALMiniAssembler = new AGALMiniAssembler(false);
 				fsa.assemble(Context3DProgramType.FRAGMENT,
-					"tex ft0, v0, fs0 <2d,linear,nomip>\nmov oc,ft0"
+					fragmentCode
 					);
 				
 				var program:Program3D = c3d.createProgram();

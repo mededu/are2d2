@@ -13,7 +13,7 @@ package net.game_develop.animation.gpu.textures
 	public class TextureManager 
 	{
 		private static var _instance:TextureManager;
-		private var lib:Dictionary = new Dictionary;
+		public var lib:Dictionary = new Dictionary;
 		public function TextureManager() 
 		{
 			if (_instance) throw "this is a instance class";
@@ -47,7 +47,7 @@ package net.game_develop.animation.gpu.textures
 				
 				var temp:BitmapData = new BitmapData(w, h, true, 0);
 				temp.draw(bmd, new Matrix(w / bmd.width, 0, 0, h / bmd.height), null, null, null, true);
-				var texture:Texture = c3d.createTexture(w,h,Context3DTextureFormat.BGRA,false);
+				var texture:Texture = c3d.createTexture(w, h, Context3DTextureFormat.BGRA, false);
 				texture.uploadFromBitmapData(temp);
 				temp.dispose();
 				lib[bmd]=texture

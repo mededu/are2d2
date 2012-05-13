@@ -9,17 +9,40 @@ package net.game_develop.animation.utils
 	{
 		public var width:int;
 		public var height:int;
-		public var wrapperRect:Rectangle;
+		//public var wrapperRect:Rectangle;
 		public var boxs:Array = [];
+		//private var lastY:int = 0;
+		private var currentY:int = 0;
+		private var ix:int = 0;
+		private var iy:int = 0;
 		public function InsertBox(width:int,height:int) 
 		{
 			this.height = height;
 			this.width = width;
-			wrapperRect = new Rectangle(0, 0, width, height);
+			//wrapperRect = new Rectangle(0, 0, width, height);
 		}
 		
 		public function add(rect:Rectangle):Boolean {
-			if (boxs.length==0) {
+			rect.x = ix;
+			rect.y = iy;
+			if (rect.bottom > height) return false;
+			if (rect.right > width) {
+				rect.x = 0;
+				rect.y = currentY;
+				if (rect.bottom > height) {
+					return false;
+				}else {
+					boxs.push(rect);
+					ix = rect.width;
+					iy = rect.y;
+				}
+			}else {
+				boxs.push(rect);
+				ix += rect.width;
+			}
+			currentY =Math.max(currentY,rect.bottom);
+			return true;
+			/*if (boxs.length==0) {
 				rect.x = rect.y = 0;
 				if (test(rect)) {
 					boxs.push(rect);
@@ -42,10 +65,10 @@ package net.game_develop.animation.utils
 					return true;
 				}
 			}
-			return false;
+			return false;*/
 		}
 		
-		private function test(rect:Rectangle):Boolean {
+		/*private function test(rect:Rectangle):Boolean {
 			if (!wrapperRect.containsRect(rect)) {
 				return false;
 			}
@@ -55,7 +78,7 @@ package net.game_develop.animation.utils
 				}
 			}
 			return true;
-		}
+		}*/
 		
 		
 		public function clear():void {

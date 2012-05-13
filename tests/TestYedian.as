@@ -19,6 +19,7 @@ package
 	import net.game_develop.animation.gpu.display.GpuAnimationData;
 	import net.game_develop.animation.gpu.display.GpuAnimationParser;
 	import net.game_develop.animation.gpu.display.GpuObj2d;
+	import net.game_develop.animation.gpu.display.GpuSpriteLayer;
 	import net.game_develop.animation.gpu.GpuView2d;
 	import net.game_develop.animation.utils.Stats;
 	/**
@@ -58,12 +59,12 @@ package
 			addChild(view);
 			main = new GpuObj2d;
 			view.add(main);
-			//groundLayer = new GpuSpriteLayer;
-			groundLayer = new GpuObj2d;
+			groundLayer = new GpuSpriteLayer(view);
+			//groundLayer = new GpuObj2d;
 			
 			main.add(groundLayer);
-			//layer = new  GpuSpriteLayer;
-			layer = new GpuObj2d;
+			layer = new  GpuSpriteLayer(view);
+			//layer = new GpuObj2d;
 			main.add(layer);
 			
 			[Embed(source = "yedian", mimeType = "application/octet-stream")]var c:Class;

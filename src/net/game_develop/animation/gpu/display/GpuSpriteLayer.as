@@ -14,6 +14,10 @@ package net.game_develop.animation.gpu.display
 	import flash.geom.Vector3D;
 	import flash.utils.Dictionary;
 	import flash.utils.getTimer;
+	import net.game_develop.animation.gpu.GpuView2d;
+	import net.game_develop.animation.gpu.progroms.ProgromManager;
+	import net.game_develop.animation.gpu.renders.LayerRenderer;
+	import net.game_develop.animation.gpu.textures.TextureManager;
 	import net.game_develop.animation.utils.InsertBox;
 	
 	/**
@@ -31,7 +35,6 @@ package net.game_develop.animation.gpu.display
 	 */
 	public class GpuSpriteLayer extends GpuObj2d
 	{
-		//static private var toDEGREES :Number = 180/Math.PI;
 		static private var toRADIANS :Number = Math.PI/180;
 		
 		internal var _vertexData:Vector.<Number>;
@@ -42,14 +45,10 @@ package net.game_develop.animation.gpu.display
 		protected var _vertexBuffer:VertexBuffer3D;
 		protected var _uvBuffer:VertexBuffer3D;
 		protected var _shaderProgram:Program3D;
-		//protected var _updateVBOs:Boolean = true;
 		private var vlChange:Boolean = true;//buff长度改变
 		private var vChange:Boolean = true;//v数据改变
 		private var uvChange:Boolean = true;//uv数据改变
 		private var tchange:Boolean = true;//材质改变
-		
-		
-		public var layerChilds:Array;
 		
 		private var vw2:Number;
 		private var vh2:Number;
@@ -63,8 +62,9 @@ package net.game_develop.animation.gpu.display
 		private var objindexs:Dictionary = new Dictionary;
 		
 		
-		public function GpuSpriteLayer(numChilds:int=15000)
+		public function GpuSpriteLayer(view:GpuView2d,numChilds:int=15000)
 		{
+			this.view = view;
 			this.numChilds = numChilds;
 			vlChange = true;
 			
@@ -79,17 +79,18 @@ package net.game_develop.animation.gpu.display
 				_indexData.push(count, count + 1, count + 3, count + 3, count + 2, count);
 			}
 			super(1, 1, null);
-		}
-		
-		override public function init():void {
-			program = view.getLayerProgram();
+			renderer = LayerRenderer.instance;
 			view.addEventListener(Event.RESIZE, view_resize);
+			vertexCode ="mov op,va0\n" +
+					"mov v0,va1";
+			fragmentCode="tex ft0, v0, fs0 <2d,linear,nomip>\n"+
+					"mov oc,ft0";
 		}
 		
 		private function view_resize(e:Event):void 
 		{
-			if (layerChilds == null) return;
-			for each(var obj:GpuObj2d in layerChilds) {
+			if (childs == null) return;
+			for each(var obj:GpuObj2d in childs) {
 				obj.change = true;
 			}
 		}
@@ -97,10 +98,6 @@ package net.game_develop.animation.gpu.display
 		override public function recompose():void
 		{
 			super.recompose();
-			
-			//var matr:Matrix3D = wmatrix.clone();
-			//matr.append(view.cammatrix);
-			//var v2:Vector3D = matr.transformVector(new Vector3D);
 			var tvw2:Number = /*scaleX**/2 / view.viewWidth;
 			var tvh2:Number = /*scaleY**/2 / view.viewHeight;
 			
@@ -111,7 +108,7 @@ package net.game_develop.animation.gpu.display
 				vh2 = tvh2;
 				vtx = tvtx;
 				vty = tvty;
-				for each(var obj:GpuObj2d in layerChilds) {
+				for each(var obj:GpuObj2d in childs) {
 					obj.change = true;
 				}
 			}
@@ -121,17 +118,22 @@ package net.game_develop.animation.gpu.display
 		override public function update():void
 		{
 			//ver 2 uv 1 tex 0 index
-			if (layerChilds&&layerChilds.length>0)
+			if (childs&&childs.length>0)
 			{
-				//var time:int = getTimer();
 				recompose();
+				wmatrix.rawData = vmatrix.rawData;
+				if (parent) {
+					wmatrix.append(parent.wmatrix);
+				}
+				recompose();
+				//var time:int = getTimer();
 				//trace("recompose",getTimer()-time);
 				//time = getTimer();
-				for (var i:int = 0, len:int = layerChilds.length; i < len; i++)
+				for (var i:int = 0, len:int = childs.length; i < len; i++)
 				{
 					//updateChildVertexDate;
 					
-					var ob2d:GpuObj2d = layerChilds[i];
+					var ob2d:GpuObj2d = childs[i];
 					ob2d.updateAnimation();
 					
 					// TODO : selfChange
@@ -154,36 +156,7 @@ package net.game_develop.animation.gpu.display
 						
 						_vertexData[count+9] =      (ob2d.vouts[9]*ob2d.scaleX * cosT - ob2d.vouts[10] * ob2d.scaleY* sinT + ob2d.x) * vw2 - vtx;
 						_vertexData[count + 10] = -(-ob2d.vouts[10]*ob2d.scaleY * cosT - ob2d.vouts[9] *ob2d.scaleX* sinT + ob2d.y) * vh2 + vty;
-						
-						/*_vertexData[count + 3] = (ob2d.vouts[3] * cosT - ob2d.vouts[4] * sinT + ob2d.x) * vw2 - vtx;
-						_vertexData[count + 4] = -(-ob2d.vouts[4] * cosT - ob2d.vouts[3] * sinT + ob2d.y) * vh2 + vty;
-						
-						_vertexData[count + 6] = (ob2d.vouts[6] * cosT - ob2d.vouts[7]  * sinT + ob2d.x) * vw2 - vtx;
-						_vertexData[count + 7] = -(-ob2d.vouts[7] * cosT - ob2d.vouts[6] * sinT + ob2d.y) * vh2 + vty;
-						
-						_vertexData[count + 9] = (ob2d.vouts[9]  * cosT - ob2d.vouts[10] * sinT + ob2d.x) * vw2 - vtx;
-						_vertexData[count + 10] = -(-ob2d.vouts[10] * cosT - ob2d.vouts[9]  * sinT + ob2d.y) * vh2 + vty;*/
 					}
-					
-					
-						
-						//use matrix3d 10000 fps 43-44
-					/*if (ob2d.change) {
-					   ob2d.recompose();
-					   }
-					   var vouts:Vector.<Number> = Vector.<Number>([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-					   var matr:Matrix3D = ob2d.vmatrix.clone();
-					   matr.append(view.cammatrix);
-					   matr.transformVectors(ob2d.vouts, vouts);
-					   var count:int = i * 12;
-					   _vertexData[count] = vouts[0];
-					   _vertexData[count+1] = vouts[1];
-					   _vertexData[count+3] = vouts[3];
-					   _vertexData[count+4] = vouts[4];
-					   _vertexData[count+6] = vouts[6];
-					   _vertexData[count+7] = vouts[7];
-					   _vertexData[count+9] = vouts[9];
-					 _vertexData[count+10] = vouts[10];*/
 					 
 					if (ob2d.textureChange) {
 						ob2d.textureChange = false;
@@ -203,12 +176,18 @@ package net.game_develop.animation.gpu.display
 				
 				//trace("childs",getTimer()-time);
 				//time = getTimer();
-				
+				view.c3d.setBlendFactors(blendSourceFactor, blendDestinationFactor);
+				if (program == null) program = ProgromManager.instance.getProgrom(vertexCode, fragmentCode,view.c3d);
 				view.c3d.setProgram(program);
-				view.c3d.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 4, wmatrix, true);
 				
 				if (tchange) {
-					inserttexture = view.textures[view.getTexture(insertbmd,true).textureId];
+					var t:Texture = TextureManager.instance.lib[insertbmd];
+					if (t) {
+						t.dispose();
+						TextureManager.instance.lib[insertbmd] = null;
+						delete TextureManager.instance.lib[insertbmd];
+					}
+					inserttexture = TextureManager.instance.getTexture(insertbmd, view.c3d);//view.textures[view.getTexture(insertbmd,true).textureId];
 					tchange = false;
 				}
 				view.c3d.setTextureAt(0, inserttexture);
@@ -232,7 +211,6 @@ package net.game_develop.animation.gpu.display
 					vlChange = false;
 				}
 				
-				
 				//trace("vlchange",getTimer()-time);
 				//time = getTimer();
 				
@@ -255,12 +233,11 @@ package net.game_develop.animation.gpu.display
 				view.c3d.setVertexBufferAt(0, _vertexBuffer, 0, Context3DVertexBufferFormat.FLOAT_3);
 				view.c3d.setVertexBufferAt(1, _uvBuffer, 0, Context3DVertexBufferFormat.FLOAT_2);
 				
-				view.c3d.drawTriangles(_indexBuffer, 0, layerChilds.length * 2);
+				view.c3d.drawTriangles(_indexBuffer, 0, childs.length * 2);
 				
 				
 				//trace("draw",getTimer()-time);
 				//time = getTimer();
-				view.c3d.setVertexBufferAt(0, view.vbuf, 0, Context3DVertexBufferFormat.FLOAT_3);
 				
 			}
 		}
@@ -303,11 +280,6 @@ package net.game_develop.animation.gpu.display
 			}
 			
 			if (irect == null) irect = testirect;
-			/*var count:int = 8 * objindexs[ob2d];
-			_uvData[count]=_uvData[count+4] = irect.x / 2048;
-			_uvData[count + 1]=_uvData[count+3] = irect.y / 2048;
-			_uvData[count+2]=_uvData[count+6] = irect.right / 2048;
-			_uvData[count + 5] = _uvData[count + 7] = irect.bottom / 2048;*/
 			
 			uvChange = true;
 		}
@@ -315,24 +287,24 @@ package net.game_develop.animation.gpu.display
 		
 		//重现刷新插入材质
 		public function resetInserts():void {
-			//trace("resetInserts");
 			insertBox.clear();
 			insertbmd.fillRect(insertbmd.rect, 0);
 			rects = new Dictionary;
-			for (var i:int = 0,len:int = layerChilds.length; i < len; i++)
+			for (var i:int = 0,len:int = childs.length; i < len; i++)
 			{
-				var ob2d:GpuObj2d = layerChilds[i]; 
+				var ob2d:GpuObj2d = childs[i]; 
 				updateInsert(ob2d);
 			}
 			tchange = true;
 		}
 		private var numChilds:int;
+		private var view:GpuView2d;
 		private var vins:Vector.<Number> = Vector.<Number>([0, 0, 0, 1, 0, 0, 0, -1, 0, 1, -1, 0]);
 		override public function add(ob2d:GpuObj2d):GpuObj2d
 		{
-			if (layerChilds == null)
+			if (childs == null)
 			{
-				layerChilds = [];
+				childs = [];
 				resetInserts();
 			}
 			
@@ -340,9 +312,9 @@ package net.game_develop.animation.gpu.display
 			{
 				ob2d.parent.remove(ob2d);
 			}
-			objindexs[ob2d] = layerChilds.length;
-			var count:int = 12 * layerChilds.length;
-			layerChilds.push(ob2d);
+			objindexs[ob2d] = childs.length;
+			var count:int = 12 * childs.length;
+			childs.push(ob2d);
 			ob2d.parent = this;
 			
 			vChange = true;
@@ -353,19 +325,19 @@ package net.game_develop.animation.gpu.display
 		
 		override public function remove(ob2d:GpuObj2d):GpuObj2d
 		{
-			if (layerChilds == null)
+			if (childs == null)
 				return null;
 			var i:int = objindexs[ob2d];
 			objindexs[ob2d] = null;
 			delete objindexs[ob2d];
 			ob2d.parent = null;
-			layerChilds.splice(i, 1);
+			childs.splice(i, 1);
 			_vertexData.splice(i*12, 12);
 			_vertexData.push(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 			_uvData.splice(i * 8, 8);
 			_uvData.push(0, 0, 0, 0, 0, 0, 0, 0);
-			for (var len:int=layerChilds.length; i < len;i++ ) {
-				var obj:GpuObj2d = layerChilds[i];
+			for (var len:int=childs.length; i < len;i++ ) {
+				var obj:GpuObj2d = childs[i];
 				objindexs[obj] = i;
 			}
 			vChange = true;
@@ -376,7 +348,7 @@ package net.game_develop.animation.gpu.display
 		override public function set change(value:Boolean):void 
 		{
 			if (value) {
-				for each(var obj2d:GpuObj2d in layerChilds) {
+				for each(var obj2d:GpuObj2d in childs) {
 					obj2d.change = true;
 				}
 			}
@@ -384,11 +356,10 @@ package net.game_develop.animation.gpu.display
 		}
 		
 		override public function setChildIndex (child:GpuObj2d, index:int) : void {
-			//return;
-			var i:int = layerChilds.indexOf(child);
+			var i:int = childs.indexOf(child);
 			if (i != -1) {
 				objindexs[child] = index;
-				layerChilds.splice(index, 0, layerChilds.splice(i, 1)[0]);
+				childs.splice(index, 0, childs.splice(i, 1)[0]);
 				if (i != index) {
 					var c:int = i * 12;
 					var v0:Number = _vertexData[c];
@@ -410,7 +381,7 @@ package net.game_develop.animation.gpu.display
 					var uv7:Number = _uvData[c + 7];
 					if(i<index){
 						for (var j:int = i; j < index; j++ ) {
-							objindexs[layerChilds[j]] = j;
+							objindexs[childs[j]] = j;
 							c = j * 12;
 							_vertexData[c] = _vertexData[c + 12];
 							_vertexData[c + 1] = _vertexData[c + 13];
@@ -432,7 +403,7 @@ package net.game_develop.animation.gpu.display
 						}
 					}else {
 						for (j = i; j > index;j-- ) {
-							objindexs[layerChilds[j]] = j;
+							objindexs[childs[j]] = j;
 							c = j * 12;
 							_vertexData[c] = _vertexData[c - 12];
 							_vertexData[c + 1] = _vertexData[c - 11];
@@ -482,23 +453,11 @@ package net.game_develop.animation.gpu.display
 		}
 		
 		override public function sortByY():void {
-			//return;
-			/*if (layerChilds) {
-				for (var i:int = layerChilds.length - 1; i >=0; i-- ) {
-					var obj2d:GpuObj2d = layerChilds[i];
-					var maxObj2d:GpuObj2d = obj2d;
-					for (var j:int = i - 1; j >= 0;j-- ) {
-						var temp:GpuObj2d = layerChilds[j];
-						if (maxObj2d.y < temp.y) maxObj2d = temp;
-					}
-					if (obj2d != maxObj2d) setChildIndex(maxObj2d, i);
-				}
-			}*/
-			if (layerChilds == null) return;
-			layerChilds.sortOn("y", Array.NUMERIC);
+			if (childs == null) return;
+			childs.sortOn("y", Array.NUMERIC);
 			
-			for (var i:int = 0, len:int = layerChilds.length; i < len;i++ ) {
-				var obj:GpuObj2d = layerChilds[i];
+			for (var i:int = 0, len:int = childs.length; i < len;i++ ) {
+				var obj:GpuObj2d = childs[i];
 				objindexs[obj] = i;
 				obj.change = true;
 				obj.textureChange = true;
