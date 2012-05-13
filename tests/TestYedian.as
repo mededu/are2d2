@@ -16,11 +16,9 @@ package
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
 	import flash.utils.Endian;
-	import net.game_develop.animation.gpu.GpuAnimationData;
-	import net.game_develop.animation.gpu.GpuAnimationParser;
-	import net.game_develop.animation.gpu.GpuAnimationSprite;
-	import net.game_develop.animation.gpu.GpuObj2d;
-	import net.game_develop.animation.gpu.GpuSpriteLayer;
+	import net.game_develop.animation.gpu.display.GpuAnimationData;
+	import net.game_develop.animation.gpu.display.GpuAnimationParser;
+	import net.game_develop.animation.gpu.display.GpuObj2d;
 	import net.game_develop.animation.gpu.GpuView2d;
 	import net.game_develop.animation.utils.Stats;
 	/**
@@ -58,13 +56,14 @@ package
 			
 			view = new GpuView2d(stage.stageWidth, stage.stageHeight);
 			addChild(view);
-			//layer = new GpuObj2d;
 			main = new GpuObj2d;
 			view.add(main);
-			groundLayer = new GpuSpriteLayer;
+			//groundLayer = new GpuSpriteLayer;
+			groundLayer = new GpuObj2d;
 			
 			main.add(groundLayer);
-			layer = new  GpuSpriteLayer;
+			//layer = new  GpuSpriteLayer;
+			layer = new GpuObj2d;
 			main.add(layer);
 			
 			[Embed(source = "yedian", mimeType = "application/octet-stream")]var c:Class;
@@ -115,7 +114,8 @@ package
 			var bmd3:BitmapData = (new bg3 as Bitmap).bitmapData;
 			
 			var bmds:Array = [bmd0, bmd1, bmd2, bmd3];
-			(groundLayer as GpuSpriteLayer).layerChilds = [];
+			//(groundLayer as GpuSpriteLayer).layerChilds = [];
+			groundLayer.childs = [];
 			gw = Math.ceil(stage.stageWidth / 96) + 1;
 			gh = Math.ceil(stage.stageHeight / 96) + 1;
 			for (var x:int = 0; x < gw;x++ ) {
@@ -218,7 +218,7 @@ package
 			}
 			main.x = int(-sprite.x + stage.stageWidth / 2);
 			main.y = int( -sprite.y + stage.stageHeight / 2);
-			for each(var obj2d:GpuObj2d in (groundLayer as GpuSpriteLayer).layerChilds) {
+			for each(var obj2d:GpuObj2d in  groundLayer.childs /*(groundLayer as GpuSpriteLayer).layerChilds*/) {
 				var x:Number = main.x + obj2d.x;
 				if (x<-48) {
 					x += Math.ceil( -x / gw/96)*gw*96;
@@ -278,7 +278,7 @@ package
 					randPlayer();
 				}
 				layer.sortByY();
-			tf.text = "点击增加动画数量" + (layer as GpuSpriteLayer).layerChilds.length;
+			tf.text = "点击增加动画数量" + layer.childs.length//(layer as GpuSpriteLayer).layerChilds.length;
 		}
 		
 		private function randPlayer(isme:Boolean = false):Particle {
@@ -339,7 +339,7 @@ package
 
 }
 
-import net.game_develop.animation.gpu.GpuAnimationSprite;
+import net.game_develop.animation.gpu.display.GpuAnimationSprite;
 
 class Particle extends GpuAnimationSprite
 {

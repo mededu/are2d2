@@ -83,8 +83,10 @@ package net.game_develop.animation.gpu.display
 		public var indexData:Vector.<uint>=DEF_INDEX_DATA;
 		public var vertexBuffer:VertexBuffer3D;
 		public var vertexData:Vector.<Number>=DEF_VERTEX_DATA;
+		public var uv:Rectangle;
+		public var uvvertexBuffer:VertexBuffer3D;
 		
-		
+		public var texture:Texture;
 		public var vouts:Vector.<Number>;
 		
 		private var _width:Number;
@@ -100,13 +102,8 @@ package net.game_develop.animation.gpu.display
 		protected var _change:Boolean = true;
 		public var selfChange:Boolean = true;
 		
-		//private var _texture:UVTexture;
-		public var texture:Texture;
 		public var textureChange:Boolean = true;
 		protected var _bmd:BitmapData;
-		public var uv:Rectangle;
-		public var uvvertexBuffer:VertexBuffer3D;
-		//protected var _view:GpuView2d;
 		
 		private var _colorTransform:ColorTransform;
 		private var colorMulData:Vector.<Number>;
@@ -118,8 +115,6 @@ package net.game_develop.animation.gpu.display
 		
 		
 		public var mouseEnabled:Boolean = true;
-		/*public var uvBuffer:VertexBuffer3D;
-		public var textureId:int;*/
 		
 		/**
 		 * 混合模式source
@@ -168,23 +163,6 @@ package net.game_develop.animation.gpu.display
 			return vouts;
 		}
 		
-		/*public function setBmd(bmd:BitmapData, offsetX:Number = NaN, offsetY:Number = NaN):void {
-			this.bmd = bmd;
-			if(bmd)texture = view.getTexture(bmd);
-			if (isNaN(offsetX)) 
-				_offsetX = -_width / 2;
-			else
-				_offsetX = offsetX;
-			if (isNaN(offsetY))
-				_offsetY = -_height / 2;
-			else
-				_offsetY = offsetY;
-			selfMatrix = new Matrix3D;
-			selfMatrix.identity();
-			selfMatrix.appendTranslation(_offsetX / _width, -_offsetY / _height, 0);
-			selfMatrix.appendScale(_width, _height, 1);
-		}*/
-		
 		public function add(ob2d:GpuObj2d):GpuObj2d {
 			if (childs==null) {
 				childs = [];
@@ -194,27 +172,8 @@ package net.game_develop.animation.gpu.display
 			}
 			childs.push(ob2d);
 			ob2d.parent = this;
-			
-			//if (view) {
-			//	addView(ob2d);
-			//}
 			return ob2d;
 		}
-		
-		/*protected function addView(obj2d:GpuObj2d):void {
-			obj2d.view = view;
-			if (obj2d.childs) {
-				for each(var c:GpuObj2d in obj2d.childs) {
-					addView(c);
-				}
-			}else if (obj2d is GpuSpriteLayer) {
-				if ((obj2d as GpuSpriteLayer).layerChilds) {
-					for each(c in (obj2d as GpuSpriteLayer).layerChilds) {
-						addView(c);
-					}
-				}
-			}
-		}*/
 		
 		public function remove(ob2d:GpuObj2d):GpuObj2d {
 			if (childs == null) return null;
@@ -337,7 +296,6 @@ package net.game_develop.animation.gpu.display
 				colorMulData = Vector.<Number>([value.redMultiplier,value.greenMultiplier,value.blueMultiplier,value.alphaMultiplier]);
 				colorAddData = Vector.<Number>([value.redOffset,value.greenOffset,value.blueOffset,value.alphaOffset]);
 			}
-			//program = view.getProgram(_colorTransform);
 		}
 		
 		public function get bmd():BitmapData 
@@ -360,18 +318,6 @@ package net.game_develop.animation.gpu.display
 			_change = value;
 		}
 		
-		/*public function get texture():UVTexture 
-		{
-			return _texture;
-		}*/
-		
-		/*public function set texture(value:UVTexture):void 
-		{
-			if(_texture!=value){
-				_texture = value;
-				textureChange = true;
-			}
-		}*/
 		
 		public function get selfMatrix():Matrix3D 
 		{
@@ -380,44 +326,9 @@ package net.game_develop.animation.gpu.display
 		
 		public function set selfMatrix(value:Matrix3D):void 
 		{
-			//if(_selfMatrix!=value){
 				_selfMatrix = value;
-				//_selfChange = true;
-			//}
 		}
 		
-		/*public function set view(value:GpuView2d):void 
-		{
-			_view = value;
-			trysetView();
-		}*/
-		
-		/*protected function trysetView():void {
-			if (_view == null ) return;
-			if (_view.c3d) init();
-			else _view.addEventListener(Event.CONTEXT3D_CREATE, view_context3dCreate);
-		}*/
-		
-		/*public function get view():GpuView2d 
-		{
-			return _view;
-		}*/
-		
-		/*private function view_context3dCreate(e:Event):void 
-		{
-			_view.removeEventListener(Event.CONTEXT3D_CREATE, view_context3dCreate);
-			init();
-		}*/
-			
-		
-		/*public function init():void {
-			setBmd(bmd, _offsetX, _offsetY);
-			program = view.getProgram(_colorTransform);
-		}*/
-		
-		
-		//private var tempRaw:Vector.<Number> = Vector.<Number>([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);
-		//private var rta:Number = -Math.PI / 180;
 		public function recompose():void
 		{
 			//math
@@ -445,18 +356,11 @@ package net.game_develop.animation.gpu.display
 			//vmatrix.recompose();
 		}
 		
-		//public function update():void {
-			//if (_colorTransform) {
-			//	view.c3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, colorMulData, 1);
-			//	view.c3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 1, colorAddData, 1);
-			//}
-			//view.c3d.setProgram(program);
-		//}
-		
 		public function sortByY():void {
 			if(childs)childs.sortOn("y", Array.NUMERIC);
 		}
 		public function updateAnimation():void { }
+		public function update():void { }
 		
 		
 		/**

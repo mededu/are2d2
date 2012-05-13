@@ -4,7 +4,7 @@ package
 	import flash.display.BitmapData;
 	import flash.display.Sprite;
 	import flash.events.Event;
-	import net.game_develop.animation.gpu.GpuObj2d;
+	import net.game_develop.animation.gpu.display.GpuObj2d;
 	import net.game_develop.animation.gpu.GpuView2d;
 	import net.game_develop.animation.utils.Stats;
 	/**

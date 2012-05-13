@@ -3,6 +3,7 @@ package net.game_develop.animation.gpu.display
 	import flash.display.BitmapData;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
+	import net.game_develop.animation.gpu.GpuView2d;
 	import net.game_develop.animation.utils.Pen;
 	/**
 	 * ...
@@ -30,7 +31,6 @@ package net.game_develop.animation.gpu.display
 			offsetX = 0;
 			offsetY = 0;
 			this.bmd = bmd;
-			trysetView();
 			//setBmd(bmd, 0, 0);
 		}
 		

@@ -4,8 +4,6 @@ package net.game_develop.animation.gpu.display
 	import flash.geom.Matrix3D;
 	import flash.geom.Point;
 	import net.game_develop.animation.bmp.AnimationData;
-	import net.game_develop.animation.gpu.GpuAnimationBase;
-	import net.game_develop.animation.gpu.GpuAnimationData;
 	/**
 	 * gpu动画生成器
 	 * @author lizhi

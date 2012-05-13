@@ -13,10 +13,10 @@ package
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import net.game_develop.animation.bmp.AnimationParser;
-	import net.game_develop.animation.gpu.GpuAnimationData;
-	import net.game_develop.animation.gpu.GpuAnimationParser;
-	import net.game_develop.animation.gpu.GpuObj2d;
-	import net.game_develop.animation.gpu.GpuSpriteLayer;
+	import net.game_develop.animation.gpu.display.GpuAnimationData;
+	import net.game_develop.animation.gpu.display.GpuAnimationParser;
+	import net.game_develop.animation.gpu.display.GpuObj2d;
+	import net.game_develop.animation.gpu.display.GpuSpriteLayer;
 	import net.game_develop.animation.gpu.GpuView2d;
 	import net.game_develop.animation.utils.Stats;
 	/**
@@ -97,8 +97,8 @@ package
 			down = GpuAnimationParser.formatToGpu(AnimationParser.parserByIndexs(bmdsource, sw, sh, gap, Vector.<uint>([6, 7, 8]),offset,"down"));
 			left = GpuAnimationParser.formatToGpu(AnimationParser.parserByIndexs(bmdsource, sw, sh, gap, Vector.<uint>([9, 10, 11]), offset, "left"));
 			
-			//playerWrapper = new GpuObj2d(1, 1, null);
-			playerWrapper = new GpuSpriteLayer();
+			playerWrapper = new GpuObj2d(1, 1, null);
+			//playerWrapper = new GpuSpriteLayer();
 			mainWrapper.add(playerWrapper);
 			//view.add(playerWrapper);
 			
@@ -266,7 +266,7 @@ package
 	}
 
 }
-import net.game_develop.animation.gpu.GpuAnimationSprite;
+import net.game_develop.animation.gpu.display.GpuAnimationSprite;
 
 class Particle extends GpuAnimationSprite
 {

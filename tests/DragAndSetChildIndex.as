@@ -9,11 +9,8 @@ package
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import net.game_develop.animation.bmp.AnimationParser;
-	import net.game_develop.animation.gpu.GpuAnimationData;
-	import net.game_develop.animation.gpu.GpuAnimationParser;
-	import net.game_develop.animation.gpu.GpuAnimationSprite;
-	import net.game_develop.animation.gpu.GpuObj2d;
-	import net.game_develop.animation.gpu.GpuSpriteLayer;
+	import net.game_develop.animation.gpu.display.GpuObj2d;
+	import net.game_develop.animation.gpu.display.GpuSpriteLayer;
 	import net.game_develop.animation.gpu.GpuView2d;
 	import net.game_develop.animation.hittests.FastPixelHittest;
 	/**
@@ -29,8 +26,8 @@ package
 			addChild(view);
 			view.ihittest = new FastPixelHittest;
 			
-			layer = new GpuSpriteLayer;
-			//layer = new GpuObj2d;
+			//layer = new GpuSpriteLayer;
+			layer = new GpuObj2d;
 			view.add(layer);
 			
 			var bmp:BitmapData = new BitmapData(10, 10, true, 0xffff0000);

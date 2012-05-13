@@ -3,7 +3,7 @@ package net.game_develop.animation.utils
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
 	import flash.display.Shape;
-	import net.game_develop.animation.gpu.GpuObj2d;
+	import net.game_develop.animation.gpu.display.GpuObj2d;
 	/**
 	 * 画笔类
 	 * @author lizhi

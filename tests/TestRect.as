@@ -8,6 +8,9 @@ package
 	import flash.geom.Point;
 	import net.game_develop.animation.bmp.AnimationParser;
 	import net.game_develop.animation.gpu.*;
+	import net.game_develop.animation.gpu.display.GpuAnimationData;
+	import net.game_develop.animation.gpu.display.GpuAnimationParser;
+	import net.game_develop.animation.gpu.display.GpuObj2d;
 	import net.game_develop.animation.utils.Stats;
 	
 	/**
@@ -40,8 +43,8 @@ package
 			
 			addEventListener(Event.ENTER_FRAME, enterFrame);
 			
-			var layer:GpuObj2d = new GpuSpriteLayer(10000);
-			//var layer:GpuObj2d = new GpuObj2d(1, 1, null);
+			//var layer:GpuObj2d = new GpuSpriteLayer(10000);
+			var layer:GpuObj2d = new GpuObj2d(1, 1, null);
 			view.add(layer);
 			var c:int = 5;
 			bmds = [];
@@ -128,6 +131,7 @@ package
 
 }
 import net.game_develop.animation.gpu.*;
+import net.game_develop.animation.gpu.display.GpuAnimationSprite;
 
 /*class Rect extends GpuObj2d
 {

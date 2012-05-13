@@ -6,6 +6,10 @@ package net.game_develop.animation.gpu.renders
 	import flash.display3D.IndexBuffer3D;
 	import flash.display3D.VertexBuffer3D;
 	import flash.utils.Dictionary;
+	import net.game_develop.animation.bmp.AnimationData;
+	import net.game_develop.animation.gpu.display.GpuAnimationBase;
+	import net.game_develop.animation.gpu.display.GpuAnimationData;
+	import net.game_develop.animation.gpu.display.GpuAnimationSprite;
 	import net.game_develop.animation.gpu.display.GpuObj2d;
 	import net.game_develop.animation.gpu.GpuView2d;
 	import net.game_develop.animation.gpu.progroms.ProgromManager;
@@ -41,6 +45,7 @@ package net.game_develop.animation.gpu.renders
 			if (!obj2d.inited) {
 				initObj2d(obj2d, c3d);
 			}
+			obj2d.update();
 			
 			if (obj2d.texture) {
 				c3d.setBlendFactors(obj2d.blendSourceFactor, obj2d.blendDestinationFactor);
@@ -80,19 +85,41 @@ package net.game_develop.animation.gpu.renders
 				vbufLib[obj2d.vertexData] = vbuf;
 			}
 			obj2d.vertexBuffer = vbuf;
-			if (obj2d.uv == null) {
-				if (defUVBuff == null) {
-					defUVBuff = c3d.createVertexBuffer(4, 2);
-					defUVBuff.uploadFromVector(Vector.<Number>([0, 0, 1, 0, 0, 1, 1, 1]), 0, 4);
+			
+			if (obj2d is GpuAnimationSprite) {
+				var aobj2d:GpuAnimationSprite = obj2d as GpuAnimationSprite;
+				for each(var adata:GpuAnimationData in aobj2d.animations) {
+					for each(var abase:GpuAnimationBase in adata.textures) {
+						if (abase.uv == null) {
+							if (defUVBuff == null) {
+								defUVBuff = c3d.createVertexBuffer(4, 2);
+								defUVBuff.uploadFromVector(Vector.<Number>([0, 0, 1, 0, 0, 1, 1, 1]), 0, 4);
+							}
+							abase.uvvertexBuffer = defUVBuff;
+						}else {
+							abase.uvvertexBuffer = c3d.createVertexBuffer(4, 2);
+							abase.uvvertexBuffer.uploadFromVector(Vector.<Number>([abase.uv.left, abase.uv.top, abase.uv.right, abase.uv.top,
+							abase.uv.left, abase.uv.bottom, abase.uv.right, abase.uv.bottom]), 0, 4);
+						}
+						abase.texture=TextureManager.instance.getTexture(abase.bmd, c3d);
+					}
 				}
-				obj2d.uvvertexBuffer = defUVBuff;
-			}else {
-				obj2d.uvvertexBuffer = c3d.createVertexBuffer(4, 2);
-				obj2d.uvvertexBuffer.uploadFromVector(Vector.<Number>([obj2d.uv.left, obj2d.uv.top, obj2d.uv.right, obj2d.uv.top,
-				obj2d.uv.left, obj2d.uv.bottom, obj2d.uv.right, obj2d.uv.bottom]), 0, 4);
+			}else{
+				if (obj2d.uv == null) {
+					if (defUVBuff == null) {
+						defUVBuff = c3d.createVertexBuffer(4, 2);
+						defUVBuff.uploadFromVector(Vector.<Number>([0, 0, 1, 0, 0, 1, 1, 1]), 0, 4);
+					}
+					obj2d.uvvertexBuffer = defUVBuff;
+				}else {
+					obj2d.uvvertexBuffer = c3d.createVertexBuffer(4, 2);
+					obj2d.uvvertexBuffer.uploadFromVector(Vector.<Number>([obj2d.uv.left, obj2d.uv.top, obj2d.uv.right, obj2d.uv.top,
+					obj2d.uv.left, obj2d.uv.bottom, obj2d.uv.right, obj2d.uv.bottom]), 0, 4);
+				}
+				obj2d.texture = TextureManager.instance.getTexture(obj2d.bmd, c3d);
 			}
 			obj2d.program = ProgromManager.instance.getProgrom(obj2d.vertexCode, obj2d.fragmentCode, c3d);
-			obj2d.texture = TextureManager.instance.getTexture(obj2d.bmd, c3d);
+			
 		}
 		
 		static public function get instance():BasicRenderer 
