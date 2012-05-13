@@ -1,4 +1,4 @@
-package net.game_develop.animation.gpu 
+package net.game_develop.animation.gpu.display 
 {
 	import flash.display.BitmapData;
 	import flash.text.TextField;

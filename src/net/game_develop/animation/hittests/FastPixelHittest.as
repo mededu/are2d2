@@ -3,7 +3,7 @@ package net.game_develop.animation.hittests
 	import flash.display.BitmapData;
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
-	import net.game_develop.animation.gpu.GpuObj2d;
+	import net.game_develop.animation.gpu.display.GpuObj2d;
 	/**
 	 * 基于像素的碰撞检测类
 	 * @author lizhi

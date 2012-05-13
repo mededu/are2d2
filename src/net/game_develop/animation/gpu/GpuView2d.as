@@ -20,6 +20,7 @@ package net.game_develop.animation.gpu
 	import flash.geom.Matrix;
 	import flash.geom.Matrix3D;
 	import flash.utils.Dictionary;
+	import net.game_develop.animation.gpu.display.GpuObj2d;
 	import net.game_develop.animation.hittests.FastPixelHittest;
 	import net.game_develop.animation.utils.ARE2D;
 	/**
@@ -31,7 +32,7 @@ package net.game_develop.animation.gpu
 		/**
 		 * 一个GpuView2d静态实例
 		 */
-		public static var viewtool:GpuView2d;
+		///public static var viewtool:GpuView2d;
 		/**
 		 * stage3d
 		 */
@@ -40,22 +41,22 @@ package net.game_develop.animation.gpu
 		 * context3d
 		 */
 		public var c3d:Context3D;
-		private var ibuf:IndexBuffer3D;
-		private var obj2ds:Array = [];
+		//private var ibuf:IndexBuffer3D;
+		//private var obj2ds:Array = [];
 		/**
 		 * 显示对象root
 		 */
 		public var _root:GpuObj2d;
 		private var _viewWidth:Number;
 		private var _viewHeight:Number;
-		private var textureLib:Dictionary = new Dictionary;
+		//private var textureLib:Dictionary = new Dictionary;
 		/**
 		 * texture库
 		 */
-		public var textures:Array = [];
-		private var nowTextureId:int = 0;
-		private var vsa:AGALMiniAssembler;
-		private var programLib:Array = [];//0 1colormul 2coloradd 3colormul+coloradd 4layer
+		//public var textures:Array = [];
+		//private var nowTextureId:int = 0;
+		//private var vsa:AGALMiniAssembler;
+		//private var programLib:Array = [];//0 1colormul 2coloradd 3colormul+coloradd 4layer
 		private var _ihittest:FastPixelHittest;
 		private var nowMouseObjs:Array = [];
 		private var currentMouseObjs:Array;
@@ -66,7 +67,7 @@ package net.game_develop.animation.gpu
 		/**
 		 * 顶点buff
 		 */
-		public var vbuf:VertexBuffer3D;
+		//public var vbuf:VertexBuffer3D;
 		
 		/**
 		 * 
@@ -75,10 +76,10 @@ package net.game_develop.animation.gpu
 		 */
 		public function GpuView2d(vwidth:Number,vheight:Number) 
 		{
-			viewtool = this;
+			//viewtool = this;
 			_root = new GpuObj2d(1, 1, null);
-			obj2ds.push(_root);
-			_root.view = this;
+			//obj2ds.push(_root);
+			//_root.view = this;
 			_viewWidth = vwidth;
 			_viewHeight = vheight;
 			if (stage) init();
@@ -108,31 +109,31 @@ package net.game_develop.animation.gpu
 			if (c3d == null) return;
 			
 			c3d.configureBackBuffer(viewWidth, viewHeight, antiAlias, false);
-			c3d.setBlendFactors(Context3DBlendFactor.ONE, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA);
+			//c3d.setBlendFactors(Context3DBlendFactor.ONE, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA);
 			
 			stage3d.x = x;
 			stage3d.y = y;
 			
-			trace(c3d.driverInfo);
+			trace(ARE2D.name, c3d.driverInfo);
 			ARE2D.renderMode = c3d.driverInfo;
 			
-			vbuf = c3d.createVertexBuffer(4, 3);
-			var vdata:Vector.<Number> = Vector.<Number>(
-				[
-				0, 0, 0,/* 0,0,*/
-				1, 0, 0, /*1, 0,*/
-				0, -1, 0, /*0, 1, */
-				1,-1,0/*,1,1*/
-				]);
-			vbuf.uploadFromVector(vdata, 0, 4);
-			c3d.setVertexBufferAt(0, vbuf, 0, Context3DVertexBufferFormat.FLOAT_3);
+			//vbuf = c3d.createVertexBuffer(4, 3);
+			//var vdata:Vector.<Number> = Vector.<Number>(
+			//	[
+			//	0, 0, 0,/* 0,0,*/
+			//	1, 0, 0, /*1, 0,*/
+			//	0, -1, 0, /*0, 1, */
+			//	1,-1,0/*,1,1*/
+			//	]);
+			//vbuf.uploadFromVector(vdata, 0, 4);
+			//c3d.setVertexBufferAt(0, vbuf, 0, Context3DVertexBufferFormat.FLOAT_3);
 			//c3d.setVertexBufferAt(1, vbuf, 3, Context3DVertexBufferFormat.FLOAT_2);
 			
-			vsa = new AGALMiniAssembler(false);
-			vsa.assemble(Context3DProgramType.VERTEX,
-				"m44 vt0,va0,vc0\n"+
-				"m44 vt0,vt0,vc4\n"+
-				"m44 op,vt0,vc8\n"+
+			//vsa = new AGALMiniAssembler(false);
+			//vsa.assemble(Context3DProgramType.VERTEX,
+			//	"m44 vt0,va0,vc0\n"+
+			//	"m44 vt0,vt0,vc4\n"+
+			//	"m44 op,vt0,vc8\n"+
 				
 				/*"dp4 vt0.x,va0,vc0\n" +
 				"dp4 vt0.y,va0,vc1\n" +
@@ -147,20 +148,20 @@ package net.game_develop.animation.gpu
 				"mov op.zw,va0.zw\n"+*/
 				
 				//"mov op,vt0\n" +
-				"mov v0,va1"
-				);
+			//	"mov v0,va1"
+			//	);
 				
 			
 			//c3d.setProgram(program);
-			ibuf = c3d.createIndexBuffer(6);
-			var idata:Vector.<uint> = Vector.<uint>([0, 1, 3,3,2,0]);
-			ibuf.uploadFromVector(idata, 0, 6);
+			//ibuf = c3d.createIndexBuffer(6);
+			//var idata:Vector.<uint> = Vector.<uint>([0, 1, 3,3,2,0]);
+			//ibuf.uploadFromVector(idata, 0, 6);
 			
 			cammatrix = new Matrix3D;
 			cammatrix.appendScale(2 / viewWidth, 2 / viewHeight, 1);
 			cammatrix.appendTranslation( -1, 1, 0);
 			
-			c3d.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 8,cammatrix , true);
+			//c3d.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 8,cammatrix , true);
 			start();
 			
 			dispatchEvent(e.clone());
@@ -171,7 +172,7 @@ package net.game_develop.animation.gpu
 		 * @param	colorTransform
 		 * @return
 		 */
-		public function getProgram(colorTransform:ColorTransform):Program3D {
+		/*public function getProgram(colorTransform:ColorTransform):Program3D {
 			var id:int = 0;
 			if (colorTransform) {
 				var isColorMul:Boolean = colorTransform.alphaMultiplier != 1 || colorTransform.redMultiplier != 1 || colorTransform.greenMultiplier != 1 || colorTransform.blueMultiplier != 1;
@@ -205,13 +206,13 @@ package net.game_develop.animation.gpu
 				programLib[id] = program;
 			}
 			return program;
-		}
+		}*/
 		
 		/**
 		 * 得到gpuspritelayer的program3d
 		 * @return
 		 */
-		public function getLayerProgram():Program3D {
+		/*public function getLayerProgram():Program3D {
 			var id:int = 4;
 			var program:Program3D = programLib[id];
 			if (program == null) {
@@ -236,7 +237,7 @@ package net.game_develop.animation.gpu
 			}
 			return program;
 			
-		}
+		}*/
 		
 		/**
 		 * 开始
@@ -275,12 +276,12 @@ package net.game_develop.animation.gpu
 		public function render(e:Event = null):void {
 			if (c3d == null) return;
 			c3d.clear(clearR,clearG,clearB,clearA);
-			for each(var obj2d:GpuObj2d in obj2ds) {
-				doobj(obj2d);
-			}
+			//for each(var obj2d:GpuObj2d in obj2ds) {
+				//doobj(_root);
+			//}
 			c3d.present();
 			
-			if (ihittest) {
+			/*if (ihittest) {
 				currentMouseObjs = [];
 				exehittest(obj2ds);
 				for each(obj2d in nowMouseObjs) {
@@ -298,7 +299,7 @@ package net.game_develop.animation.gpu
 					}
 				}
 				nowMouseObjs = currentMouseObjs;
-			}
+			}*/
 		}
 		
 		private function exehittest(childs:Array):Boolean {
@@ -320,8 +321,7 @@ package net.game_develop.animation.gpu
 			return false;
 		}
 		
-		//private var tempMatr:Matrix3D = new Matrix3D;
-		private function doobj(obj2d:GpuObj2d):void {
+		/*private function doobj(obj2d:GpuObj2d):void {
 			if (obj2d.change) {
 				obj2d.recompose();
 			}
@@ -331,15 +331,9 @@ package net.game_develop.animation.gpu
 			}
 			obj2d.update();
 			
-			
-			
 			if(obj2d.texture){
 				c3d.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, obj2d.selfMatrix, true);
 				c3d.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 4, obj2d.wmatrix, true);
-				//tempMatr.copyFrom(obj2d.selfMatrix);
-				//tempMatr.append(obj2d.wmatrix);
-				//tempMatr.append(cammatrix);
-				//c3d.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX,8,tempMatr,true);
 				
 				c3d.setTextureAt(0, textures[obj2d.texture.textureId]);
 				
@@ -351,8 +345,7 @@ package net.game_develop.animation.gpu
 					doobj(ob);
 				}
 			}
-			
-		}
+		}*/
 		
 		/**
 		 * 通过bmd得到texture
@@ -360,7 +353,7 @@ package net.game_develop.animation.gpu
 		 * @param	layer
 		 * @return
 		 */
-		public function getTexture(bmd:BitmapData, layer:Boolean = false):UVTexture {
+		/*public function getTexture(bmd:BitmapData, layer:Boolean = false):UVTexture {
 			if (textureLib[bmd] == null||layer) {
 				var w:int = 2048;
 				var h:int = 2048;
@@ -385,7 +378,6 @@ package net.game_develop.animation.gpu
 					var texture:Texture = textures[textureLib[bmd].textureId];
 				}else {
 					texture = c3d.createTexture(w,h,Context3DTextureFormat.BGRA,false);
-					//trace("createTexture", w, h,layer);
 				}
 				texture.uploadFromBitmapData(temp);
 				textures[nowTextureId] = texture;
@@ -400,7 +392,7 @@ package net.game_develop.animation.gpu
 				textureLib[bmd] = uvtexture;
 			}
 			return textureLib[bmd];
-		}
+		}*/
 		
 		/**
 		 * 添加显示对象
@@ -545,7 +537,7 @@ package net.game_develop.animation.gpu
 				cammatrix.appendScale(2 / viewWidth, 2 / viewHeight, 1);
 				cammatrix.appendTranslation( -1, 1, 0);
 				
-				c3d.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 8, cammatrix , true);
+				//c3d.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 8, cammatrix , true);
 				
 				c3d.configureBackBuffer(viewWidth, viewHeight, antiAlias, false);
 			}

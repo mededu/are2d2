@@ -1,6 +1,7 @@
-package net.game_develop.animation.gpu 
+package net.game_develop.animation.gpu.display 
 {
 	import flash.display.BitmapData;
+	import flash.display3D.Context3DBlendFactor;
 	import flash.display3D.Context3DProgramType;
 	import flash.display3D.Program3D;
 	import flash.display3D.textures.Texture;
@@ -9,7 +10,10 @@ package net.game_develop.animation.gpu
 	import flash.events.EventDispatcher;
 	import flash.geom.ColorTransform;
 	import flash.geom.Matrix3D;
+	import flash.geom.Point;
 	import flash.geom.Vector3D;
+	import net.game_develop.animation.gpu.renders.BasicRenderer;
+	import net.game_develop.animation.gpu.renders.IRenderer;
 	
 	[Event(name="mouseUp", type="flash.events.MouseEvent")] 
 
@@ -80,24 +84,34 @@ package net.game_develop.animation.gpu
 		protected var _change:Boolean = true;
 		public var selfChange:Boolean = true;
 		
-		private var _texture:UVTexture;
+		//private var _texture:UVTexture;
+		public var texture:Texture;
 		public var textureChange:Boolean = true;
 		protected var _bmd:BitmapData;
-		protected var _view:GpuView2d;
+		public var uv:Point;
+		//protected var _view:GpuView2d;
 		
 		private var _colorTransform:ColorTransform;
 		private var colorMulData:Vector.<Number>;
 		private var colorAddData:Vector.<Number>;
-		protected var program:Program3D;
+		public var vertexCode:String;
+		public var fragmentCode:String;
+		public var program:Program3D;
+		public var renderer:IRenderer;
+		
 		
 		public var mouseEnabled:Boolean = true;
 		/*public var uvBuffer:VertexBuffer3D;
 		public var textureId:int;*/
-		public function GpuObj2d(width:Number=1, height:Number=1,bmd:BitmapData=null,offsetX:Number=NaN, offsetY:Number=NaN)
+		
+		public var  blendSourceFactor:String = Context3DBlendFactor.ONE;
+		public var blendDestinationFactor:String = Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA;
+		public function GpuObj2d(width:Number=1, height:Number=1,bmd:BitmapData=null,offsetX:Number=NaN, offsetY:Number=NaN,uv:Point=null)
 		{
 			
-			
+			renderer = BasicRenderer.instance;
 			_bmd = bmd;
+			this.uv = uv;
 			_width = width;
 			_height = height;
 			
@@ -126,7 +140,7 @@ package net.game_develop.animation.gpu
 			return vouts;
 		}
 		
-		public function setBmd(bmd:BitmapData, offsetX:Number = NaN, offsetY:Number = NaN):void {
+		/*public function setBmd(bmd:BitmapData, offsetX:Number = NaN, offsetY:Number = NaN):void {
 			this.bmd = bmd;
 			if(bmd)texture = view.getTexture(bmd);
 			if (isNaN(offsetX)) 
@@ -141,7 +155,7 @@ package net.game_develop.animation.gpu
 			selfMatrix.identity();
 			selfMatrix.appendTranslation(_offsetX / _width, -_offsetY / _height, 0);
 			selfMatrix.appendScale(_width, _height, 1);
-		}
+		}*/
 		
 		public function add(ob2d:GpuObj2d):GpuObj2d {
 			if (childs==null) {
@@ -153,13 +167,13 @@ package net.game_develop.animation.gpu
 			childs.push(ob2d);
 			ob2d.parent = this;
 			
-			if (view) {
-				addView(ob2d);
-			}
+			//if (view) {
+			//	addView(ob2d);
+			//}
 			return ob2d;
 		}
 		
-		protected function addView(obj2d:GpuObj2d):void {
+		/*protected function addView(obj2d:GpuObj2d):void {
 			obj2d.view = view;
 			if (obj2d.childs) {
 				for each(var c:GpuObj2d in obj2d.childs) {
@@ -172,7 +186,7 @@ package net.game_develop.animation.gpu
 					}
 				}
 			}
-		}
+		}*/
 		
 		public function remove(ob2d:GpuObj2d):GpuObj2d {
 			if (childs == null) return null;
@@ -295,7 +309,7 @@ package net.game_develop.animation.gpu
 				colorMulData = Vector.<Number>([value.redMultiplier,value.greenMultiplier,value.blueMultiplier,value.alphaMultiplier]);
 				colorAddData = Vector.<Number>([value.redOffset,value.greenOffset,value.blueOffset,value.alphaOffset]);
 			}
-			program = view.getProgram(_colorTransform);
+			//program = view.getProgram(_colorTransform);
 		}
 		
 		public function get bmd():BitmapData 
@@ -318,18 +332,18 @@ package net.game_develop.animation.gpu
 			_change = value;
 		}
 		
-		public function get texture():UVTexture 
+		/*public function get texture():UVTexture 
 		{
 			return _texture;
-		}
+		}*/
 		
-		public function set texture(value:UVTexture):void 
+		/*public function set texture(value:UVTexture):void 
 		{
 			if(_texture!=value){
 				_texture = value;
 				textureChange = true;
 			}
-		}
+		}*/
 		
 		public function get selfMatrix():Matrix3D 
 		{
@@ -344,34 +358,34 @@ package net.game_develop.animation.gpu
 			//}
 		}
 		
-		public function set view(value:GpuView2d):void 
+		/*public function set view(value:GpuView2d):void 
 		{
 			_view = value;
 			trysetView();
-		}
+		}*/
 		
-		protected function trysetView():void {
+		/*protected function trysetView():void {
 			if (_view == null ) return;
 			if (_view.c3d) init();
 			else _view.addEventListener(Event.CONTEXT3D_CREATE, view_context3dCreate);
-		}
+		}*/
 		
-		public function get view():GpuView2d 
+		/*public function get view():GpuView2d 
 		{
 			return _view;
-		}
+		}*/
 		
-		private function view_context3dCreate(e:Event):void 
+		/*private function view_context3dCreate(e:Event):void 
 		{
 			_view.removeEventListener(Event.CONTEXT3D_CREATE, view_context3dCreate);
 			init();
-		}
+		}*/
 			
 		
-		public function init():void {
+		/*public function init():void {
 			setBmd(bmd, _offsetX, _offsetY);
 			program = view.getProgram(_colorTransform);
-		}
+		}*/
 		
 		
 		//private var tempRaw:Vector.<Number> = Vector.<Number>([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);
@@ -403,13 +417,13 @@ package net.game_develop.animation.gpu
 			//vmatrix.recompose();
 		}
 		
-		public function update():void {
-			if (_colorTransform) {
-				view.c3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, colorMulData, 1);
-				view.c3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 1, colorAddData, 1);
-			}
-			view.c3d.setProgram(program);
-		}
+		//public function update():void {
+			//if (_colorTransform) {
+			//	view.c3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, colorMulData, 1);
+			//	view.c3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 1, colorAddData, 1);
+			//}
+			//view.c3d.setProgram(program);
+		//}
 		
 		public function sortByY():void {
 			if(childs)childs.sortOn("y", Array.NUMERIC);

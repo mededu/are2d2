@@ -1,4 +1,4 @@
-package net.game_develop.animation.gpu 
+package net.game_develop.animation.gpu.textures 
 {
 	import flash.display3D.textures.Texture;
 	import flash.display3D.VertexBuffer3D;
